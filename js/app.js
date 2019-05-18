@@ -5,8 +5,9 @@ const
     numEnemies = 3,
     minEnemySpeed = 202,
     playerInitX = 202,
-    rightMostPlayerX = 404,
     playerInitY = 405,
+    playerWinY = -10,
+    rightMostPlayerX = 404,
     lastColumn = 505,
     enemyYOffset = -20,
     yGap = 10,
@@ -71,11 +72,17 @@ Player.prototype.update = function(key) {
             this.x = Math.min(rightMostPlayerX,this.x + columnIncrement);
             break;
         case "up":
-            this.y = this.y - rowIncrement;
+            this.y = Math.max(playerWinY, this.y - rowIncrement);
             break;
         case "down":
             this.y = Math.min(playerInitY,this.y + rowIncrement);
-    }
+    };
+    
+    if (this.y === playerWinY) {
+        console.log("Win!");
+        this.x = playerInitX;
+        this.y = playerInitY;
+    };
 };
 
 // Draw the player on the screen, required method for game
@@ -101,6 +108,7 @@ function getRandomInt(max) {
 // Place the player object in a variable called player
 var player = new Player(playerInitX,playerInitY);
 
+// Check for collisions and, if so, reset play to init position
 function checkCollisions (a,b) {
     b.forEach(function(enemy) {
         let checkRow = ((a.y - yGap) === enemy.y);
