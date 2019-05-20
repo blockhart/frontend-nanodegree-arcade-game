@@ -12,7 +12,13 @@ const
     enemyYOffset = -20,
     yGap = 10,
     apparentCollision = 80,
+    winDelay = 5,
     allEnemies = [];
+
+let disableInput = false,
+    blinkCount = 1,
+    firstPass = true,
+    blinkPlayer;
 
 // Establish Enemy class - I used ES6 for this
 class Enemy {
@@ -47,23 +53,23 @@ function Player(x, y) {
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/char-boy.png';
+    this.sprite = 'images/char-horn-girl.png';
     this.x = x;
     this.y = y;
 };
 
 // Check for player position relative to enemies
 Player.prototype.update = function(key) {
-    if (this.y === playerWinY) {
-        console.log("Win!");
-        this.x = playerInitX;
-        this.y = playerInitY;
+    if (this.y === playerWinY && firstPass) {
+        playerBlink();
     };
 };
 
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if (blinkCount % 2 == 1) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    };
 };
 
 // Move player based on keyboard inputs
@@ -97,6 +103,8 @@ function getRandomInt(max) {
     return 1 + Math.floor(Math.random() * max);
 };
 
+
+
 // Place the player object in a variable called player
 var player = new Player(playerInitX,playerInitY);
 
@@ -106,12 +114,35 @@ function checkCollisions () {
         let checkRow = ((player.y - yGap) === enemy.y);
         let checkLeft = ((player.x > enemy.x) && (player.x < (enemy.x + apparentCollision)));       
         let checkRight = ((enemy.x > player.x) && (enemy.x < (player.x + apparentCollision)));
-        if (checkRow && (checkLeft || checkRight)) {
-            console.log("You collided with an enemy!")
-            player.x = playerInitX;
-            player.y = playerInitY;
+        if (checkRow && (checkLeft || checkRight) && firstPass) {
+            playerBlink();
+            enemyHold(enemy);
         };
     });
+};
+
+function playerBlink() {
+    firstPass = false;
+    disableInput = true;
+    let blinker = setInterval(function() {
+        blinkCount++;
+    },500);
+    let blinkerOff = setTimeout(function(){
+        clearInterval(blinker);
+        blinkCount=1;
+        firstPass = true;
+        disableInput = false;
+        player.x = playerInitX;
+        player.y = playerInitY;
+    },3500);
+}
+
+function enemyHold(enemy) {
+    let temp = enemy.speed;
+    enemy.speed = 0;
+    let restartEnemy = setTimeout(function(){
+        enemy.speed = temp;
+    },3500,enemy,temp)
 };
 
 // This listens for key presses and sends the keys to the
@@ -123,6 +154,8 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
-    player.handleInput(allowedKeys[e.keyCode]);
+    if (disableInput === false) {
+        player.handleInput(allowedKeys[e.keyCode]); 
+    };
+   
 });
