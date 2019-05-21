@@ -16,9 +16,14 @@ const
     allEnemies = [];
 
 let disableInput = false,
-    blinkCount = 1,
+    drawOn = true,
     firstPass = true,
     blinkPlayer;
+
+
+const jumpNoise = new Audio('sounds/zapsplat_cartoon_frog_jump_26526.mp3'),
+    collisionNoise = new Audio('sounds/zapsplat_multimedia_game_sound_error_incorrect_004_30724.mp3'),
+    splashNoise = new Audio('sounds/zapsplat_foley_stone_small_throw_into_puddle_water_splash_002_29841.mp3');
 
 // Establish Enemy class - I used ES6 for this
 class Enemy {
@@ -61,13 +66,14 @@ function Player(x, y) {
 // Check for player position relative to enemies
 Player.prototype.update = function(key) {
     if (this.y === playerWinY && firstPass) {
+        splashNoise.play();
         playerBlink();
     };
 };
 
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
-    if (blinkCount % 2 == 1) {
+    if (drawOn) {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     };
 };
@@ -86,6 +92,10 @@ Player.prototype.handleInput = function(key) {
             break;
         case "down":
             this.y = Math.min(playerInitY,this.y + rowIncrement);
+    };
+    
+    if (key == "left" || key == "right" || key == "up" || key == "down") {
+        jumpNoise.play();
     };
 };
 
@@ -117,6 +127,7 @@ function checkCollisions () {
         if (checkRow && (checkLeft || checkRight) && firstPass) {
             playerBlink();
             enemyHold(enemy);
+            collisionNoise.play();
         };
     });
 };
@@ -125,11 +136,11 @@ function playerBlink() {
     firstPass = false;
     disableInput = true;
     let blinker = setInterval(function() {
-        blinkCount++;
+       drawOn = drawOn === true ? false : true;
     },500);
     let blinkerOff = setTimeout(function(){
         clearInterval(blinker);
-        blinkCount=1;
+        drawOn = true;
         firstPass = true;
         disableInput = false;
         player.x = playerInitX;
