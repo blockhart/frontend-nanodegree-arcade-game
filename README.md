@@ -1,20 +1,15 @@
 # Classic Arcade Game Clone Project
 
-## Table of Contents
-
-- [Instructions](#instructions)
-- [Contributing](#contributing)
+This is a rudimentary implementation of the Classic Arcade Game Frogger.
 
 ## Instructions
 
-Use this [rubric](https://review.udacity.com/#!/rubrics/15/view) for self-checking your submission.
+The goal of the game is to move your player, square by square, from the starting position at the bottom of the screen to the top row where there is water.
 
-Make sure the functions you write are **object-oriented** - either class functions (like `Player` and `Enemy`) or class prototype functions such as `Enemy.prototype.checkCollisions`. Also make sure that the keyword `this` is used appropriately within your class and class prototype functions to refer to the object the function is called upon.
+To move your player, use one of the four appropriate arrow keys on your keyboard.
 
-Your **README.md** file should be updated with instructions on both how to 1. Run and 2. Play your arcade game.
+*Avoid the bugs*
+When you collide with a bug, the bug will stop and your player will blink, indicating a collision.  After this, your player will reset to the starting position.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
-
-## Contributing
-
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
+*Winning*
+When you enter the water, your player will blink for a few seconds to indicate success, and then will be reset in the starting position. After each win, the bugs will get a little faster...

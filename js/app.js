@@ -3,7 +3,6 @@ const
     columnIncrement = 101,
     rowIncrement = 83,
     numEnemies = 3,
-    minEnemySpeed = 202,
     speedModifier = 3,
     playerInitX = 202,
     playerInitY = 405,
@@ -21,6 +20,7 @@ const
 let disableInput = false,
     drawOn = true,
     firstPass = true,
+    minEnemySpeed = 202,
     blinkPlayer;
 
 // Sound effects obtained from zapsplat.com (https//ww.zapsplat.com)
@@ -59,19 +59,19 @@ class Enemy {
         //calc new eneny speed, with minimum and random additional amount
         this.speed = Math.floor(minEnemySpeed + columnIncrement * speedModifier * Math.random());
     };
-
+    //for holding enemy in place after a collision
     enemyHold() {
         let enemy = this;
         let temp = this.speed;
         this.speed = 0;
         let restartEnemy = setTimeout(function(){
             enemy.speed = temp;
+            minEnemySpeed = 202;
         },blinkingDelay,enemy,temp)
     };
 };
 
 // Estalish player "Class" - I used ES5 for this for future viewing
-
 function Player(x, y) {
     this.sprite = 'images/char-horn-girl.png';
     this.x = x;
@@ -85,6 +85,8 @@ Player.prototype.update = function(key) {
     if (this.y === playerWinY && firstPass) {
         splashNoise.play();
         playerBlink();
+        // after win, speed up bugs by 10%
+        minEnemySpeed = minEnemySpeed * 1.1;
     };
 };
 
